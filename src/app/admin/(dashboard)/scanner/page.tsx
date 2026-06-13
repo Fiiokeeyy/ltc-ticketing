@@ -51,7 +51,7 @@ export default function ScannerPage() {
   };
 
   return (
-    <div>
+    <div className="flex flex-col min-w-0 w-full max-w-full overflow-x-hidden">
       {/* Hero Section */}
       <AdminHeroSection
         title="Scan Tiket (Gate)"
@@ -62,25 +62,25 @@ export default function ScannerPage() {
       <MobileMenuButtonWrapper />
 
       {/* Content */}
-      <div className="space-y-6 p-4 md:p-8">
-        <div className="grid gap-6 lg:grid-cols-2">
+      <div className="space-y-6 p-4 md:p-8 w-full max-w-full min-w-0">
+        <div className="grid gap-6 lg:grid-cols-2 w-full max-w-full min-w-0">
           
           {/* Left Column: Scanner */}
-          <div className="space-y-4">
+          <div className="space-y-4 w-full max-w-full min-w-0">
             {/* Camera Toggle Header */}
-            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
+            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm w-full">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100">
                   <Camera className="h-5 w-5 text-orange-500" />
                 </div>
-                <div>
-                  <h2 className="text-sm font-semibold text-zinc-900">Pemindai Kamera</h2>
-                  <p className="text-xs text-zinc-500">Arahkan kamera ke QR Code E-Tiket</p>
+                <div className="min-w-0">
+                  <h2 className="truncate text-sm font-semibold text-zinc-900">Pemindai Kamera</h2>
+                  <p className="truncate text-xs text-zinc-500">Arahkan kamera ke QR Code E-Tiket</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsCameraActive((v) => !v)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+                className={`shrink-0 ml-2 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                   isCameraActive
                     ? "bg-red-100 text-red-600 hover:bg-red-200"
                     : "bg-green-100 text-green-600 hover:bg-green-200"
@@ -119,26 +119,26 @@ export default function ScannerPage() {
             </div>
 
             {/* Manual Input */}
-            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+            <div className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm w-full">
               <h3 className="mb-3 text-sm font-semibold text-zinc-900 flex items-center gap-2">
-                <ScanLine className="h-4 w-4 text-orange-500" />
-                Input Manual (Jika Kamera Rusak)
+                <ScanLine className="h-4 w-4 shrink-0 text-orange-500" />
+                <span className="truncate">Input Manual (Jika Kamera Rusak)</span>
               </h3>
-              <form onSubmit={handleManualSubmit} className="flex gap-2">
+              <form onSubmit={handleManualSubmit} className="flex gap-2 w-full">
                 <input
                   type="text"
                   placeholder="Ketik atau tempel ID Tiket..."
                   value={manualId}
                   onChange={(e) => setManualId(e.target.value)}
-                  className="flex-1 rounded-lg border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  className="flex-1 min-w-0 rounded-lg border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm focus:border-orange-500 focus:outline-none transition-colors"
                 />
                 <button
                   type="submit"
                   aria-label="Cek ID Manual"
                   disabled={isProcessing || !manualId.trim()}
-                  className="flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 disabled:opacity-50 transition-colors cursor-pointer"
+                  className="flex shrink-0 items-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-orange-600 disabled:opacity-50 transition-colors cursor-pointer"
                 >
-                  <Search className="h-4 w-4" />
+                  <Search className="h-4 w-4 shrink-0" />
                   Cek
                 </button>
               </form>
@@ -146,22 +146,22 @@ export default function ScannerPage() {
           </div>
 
           {/* Right Column: Result Panel */}
-          <div className="space-y-4">
+          <div className="space-y-4 w-full max-w-full min-w-0">
             {/* Result Header */}
-            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
+            <div className="flex items-center justify-between rounded-xl border border-zinc-200 bg-white p-4 shadow-sm w-full">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-100">
                   <Ticket className="h-5 w-5 text-orange-500" />
                 </div>
-                <div>
-                  <h2 className="text-sm font-semibold text-zinc-900">Hasil Verifikasi</h2>
-                  <p className="text-xs text-zinc-500">Hasil scan tiket ditampilkan di sini</p>
+                <div className="min-w-0">
+                  <h2 className="truncate text-sm font-semibold text-zinc-900">Hasil Verifikasi</h2>
+                  <p className="truncate text-xs text-zinc-500">Hasil scan tiket ditampilkan di sini</p>
                 </div>
               </div>
               {scanResult && (
                 <button
                   onClick={handleReset}
-                  className="rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-600 hover:bg-zinc-200 transition-colors cursor-pointer"
+                  className="shrink-0 ml-2 rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-semibold text-zinc-600 hover:bg-zinc-200 transition-colors cursor-pointer"
                 >
                   Reset
                 </button>
