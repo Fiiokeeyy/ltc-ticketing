@@ -1,26 +1,46 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Hide scrollbar utility */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Print Styles untuk E-Tiket */
+@media print {
+  /* Hide elements that shouldn't be printed */
+  .print\:hidden {
+    display: none !important;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Remove page margins */
+  @page {
+    margin: 0.5cm;
+  }
+
+  /* Reset body background for print */
+  body {
+    background: white !important;
+  }
+
+  /* Ensure ticket card prints properly */
+  .print\:shadow-none {
+    box-shadow: none !important;
+  }
+
+  /* Prevent page breaks inside important sections */
+  .print\:break-inside-avoid {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Fix background colors for print */
+  .print\:bg-white {
+    background-color: white !important;
+  }
 }

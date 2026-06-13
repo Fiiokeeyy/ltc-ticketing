@@ -1,0 +1,24 @@
+import { drizzle } from "drizzle-orm/libsql";
+import { createClient } from "@libsql/client";
+import * as schema from "./schema";
+
+// Environment variable validation
+if (!process.env.TURSO_CONNECTION_URL) {
+  throw new Error("TURSO_CONNECTION_URL is required");
+}
+
+if (!process.env.TURSO_AUTH_TOKEN) {
+  throw new Error("TURSO_AUTH_TOKEN is required");
+}
+
+// Create libSQL client
+const client = createClient({
+  url: process.env.TURSO_CONNECTION_URL,
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
+
+// Initialize Drizzle client with schema
+export const db = drizzle(client, { schema });
+
+// Re-export schema for convenience
+export { schema };
