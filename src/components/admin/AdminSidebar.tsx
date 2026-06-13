@@ -85,7 +85,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 z-50 h-screen w-72 bg-zinc-950 text-white transition-transform duration-300 lg:sticky lg:translate-x-0 ${
+        className={`fixed top-0 z-50 h-[100dvh] w-72 bg-zinc-950 text-white transition-transform duration-300 lg:sticky lg:translate-x-0 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -128,7 +128,7 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 space-y-1 p-4">
+          <nav className="flex-1 overflow-y-auto space-y-1 p-4">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);

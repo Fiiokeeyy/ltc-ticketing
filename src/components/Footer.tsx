@@ -34,7 +34,7 @@ export default function Footer() {
             {/* Social Media Icons - Moved here */}
             <div className="flex gap-3 pt-2">
               <a
-                href="#"
+                href="https://www.instagram.com/labteaterciputat?igsh=MXMzZHlkc3M0dmJ0Ng=="
                 className="group flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 transition-colors"
                 aria-label="Instagram"
                 target="_blank"
@@ -43,7 +43,7 @@ export default function Footer() {
                 <FaInstagram className="h-5 w-5 text-zinc-600 group-hover:text-zinc-900" />
               </a>
               <a
-                href="#"
+                href="https://youtube.com/@labteaterciputat?si=ZIjOj9wnxgDH_CPq"
                 className="group flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 transition-colors"
                 aria-label="YouTube"
                 target="_blank"
