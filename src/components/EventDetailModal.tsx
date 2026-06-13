@@ -129,7 +129,7 @@ export default function EventDetailModal({ isOpen, onClose, event }: EventDetail
     transition: "transform 280ms cubic-bezier(0.34,1.56,0.64,1), opacity 250ms ease",
     transform: isIn ? "scale(1) translateY(0)" : "scale(0.95) translateY(10px)",
     opacity: isIn ? 1 : 0,
-    maxHeight: "min(88vh, 700px)",
+    maxHeight: "min(85vh, 650px)",
   };
 
   return createPortal(
@@ -168,7 +168,7 @@ export default function EventDetailModal({ isOpen, onClose, event }: EventDetail
       {/*Desktop card: centered dialog*/}
       <div className="hidden sm:flex absolute inset-0 items-center justify-center p-6 pointer-events-none">
         <div
-          className="pointer-events-auto relative flex flex-col overflow-hidden rounded-3xl bg-white shadow-[0_24px_80px_rgba(0,0,0,0.22)] w-full max-w-lg lg:max-w-xl"
+          className="pointer-events-auto relative flex flex-col sm:flex-row overflow-hidden rounded-3xl bg-white shadow-[0_24px_80px_rgba(0,0,0,0.22)] w-full max-w-3xl lg:max-w-4xl"
           style={desktopCardStyle}
           onClick={(e) => e.stopPropagation()}
         >
@@ -200,123 +200,123 @@ interface ModalContentProps {
 function ModalContent({ event, dateStr, timeStr, minPrice, isMobile, onClose }: ModalContentProps) {
   return (
     <>
-      {/* Drag handle — mobile only */}
-      {isMobile && (
-        <div className="flex shrink-0 justify-center pt-3 pb-1">
-          <div className="h-1 w-10 rounded-full bg-zinc-300" />
-        </div>
-      )}
-
-      {/* Close button */}
+      {/* Absolute Close button (Shared) */}
       <button
         onClick={onClose}
         aria-label="Tutup modal"
-        className="absolute right-3 top-3 z-20 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/90 text-zinc-600 shadow-md ring-1 ring-black/5 transition-all hover:scale-110 hover:bg-white hover:text-zinc-900 active:scale-95"
+        className="absolute right-4 top-4 z-40 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-white/90 text-zinc-700 shadow-md ring-1 ring-black/5 transition-all hover:scale-110 hover:bg-white hover:text-zinc-950 active:scale-95"
       >
         <X className="h-4 w-4" />
       </button>
 
-      {/*Scrollable body*/}
-      <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
-        {/* Poster */}
-        {event.posterUrl ? (
-          <div className="relative h-44 w-full shrink-0 overflow-hidden bg-zinc-100 sm:h-56">
-            <Image
-              src={event.posterUrl}
-              alt={event.title}
-              fill
-              className="object-cover transition-transform duration-700 hover:scale-105"
-              sizes="(max-width: 640px) 100vw, 576px"
-              priority
-            />
-            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/10 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-8">
-              <h2 className="text-xl font-extrabold leading-snug tracking-tight text-white drop-shadow-lg sm:text-2xl">
-                {event.title}
-              </h2>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="flex h-28 shrink-0 items-center justify-center bg-linear-to-br from-orange-50 to-orange-100 sm:h-36">
-              <Ticket className="h-14 w-14 text-orange-300" />
-            </div>
-            <div className="px-5 pt-4 sm:px-6">
-              <h2 className="text-xl font-extrabold leading-snug tracking-tight text-zinc-950 sm:text-2xl">
-                {event.title}
-              </h2>
-            </div>
-          </>
-        )}
-
-        {/* Content */}
-        <div className="px-5 pb-4 pt-4 sm:px-6">
-          {/* Spacer when title is overlaid on poster */}
-          {event.posterUrl && <div className="mb-4" />}
-
-          {/* Info rows */}
-          <div className="grid grid-cols-1 gap-2.5">
-            <InfoRow icon={<Calendar className="h-4 w-4 text-orange-500" />} label="Tanggal" value={dateStr} truncate />
-            <InfoRow icon={<Clock className="h-4 w-4 text-orange-500" />}    label="Waktu"   value={`${timeStr} WIB`} />
-            <InfoRow icon={<MapPin className="h-4 w-4 text-orange-500" />}   label="Lokasi"  value="LTC Indonesia" />
-          </div>
-
-          {/* Sinopsis */}
-          {event.description && (
-            <div className="mt-5">
-              <SectionLabel>Sinopsis</SectionLabel>
-              <p className="mt-2 text-sm leading-relaxed text-zinc-600">{event.description}</p>
+      {/* Main Container: Stack on Mobile, Side-by-side on Desktop */}
+      <div className="flex flex-1 flex-col sm:flex-row w-full h-full min-h-0">
+        
+        {/* LEFT COLUMN: Poster & Mobile Header */}
+        <div className="relative shrink-0 sm:w-5/12 lg:w-[45%] bg-zinc-100 flex flex-col">
+          {/* Drag handle — mobile only (absolute over poster) */}
+          {isMobile && (
+            <div className="absolute left-0 right-0 top-3 z-40 flex justify-center pointer-events-none">
+              <div className="h-1.5 w-12 rounded-full bg-white/60 backdrop-blur-md shadow-sm" />
             </div>
           )}
 
-          {/* Kategori Tiket */}
-          {event.tickets.length > 0 && (
-            <div className="mt-5 pb-2">
-              <SectionLabel>Kategori Tiket</SectionLabel>
-              <div className="mt-3 space-y-2">
-                {event.tickets.map((ticket) => (
-                  <div
-                    key={ticket.id}
-                    className="flex items-center justify-between rounded-xl border border-zinc-100 bg-zinc-50/80 px-4 py-3 transition-colors hover:border-orange-100 hover:bg-orange-50/50"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-zinc-900">{ticket.categoryName}</p>
-                      <p className="mt-0.5 text-xs text-zinc-400">
-                        {ticket.stockQuota > 0 ? `${ticket.stockQuota} tiket tersedia` : "Habis terjual"}
-                      </p>
-                    </div>
-                    <p className="text-sm font-bold text-orange-500 sm:text-base">
-                      Rp {ticket.price.toLocaleString("id-ID")}
-                    </p>
-                  </div>
-                ))}
+          {event.posterUrl ? (
+            <div className="relative h-48 sm:h-full w-full">
+              <Image
+                src={event.posterUrl}
+                alt={event.title}
+                fill
+                className="object-cover sm:object-center transition-transform duration-700 hover:scale-105"
+                sizes="(max-width: 640px) 100vw, 45vw"
+                priority
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-black/10 sm:hidden" />
+              <div className="absolute bottom-0 left-0 right-0 p-5 sm:hidden">
+                <h2 className="text-xl font-extrabold leading-snug tracking-tight text-white drop-shadow-lg">{event.title}</h2>
               </div>
+            </div>
+          ) : (
+            <div className="flex h-40 sm:h-full w-full flex-col items-center justify-center bg-linear-to-br from-orange-100 to-orange-200 p-5 text-center">
+              <Ticket className="mb-3 h-12 w-12 text-orange-400 sm:mb-4 sm:h-16 sm:w-16" />
+              <h2 className="text-xl font-extrabold leading-tight text-orange-950 sm:hidden">{event.title}</h2>
             </div>
           )}
         </div>
-      </div>
 
-      {/* Sticky footer */}
-      <div className="shrink-0 flex items-center justify-between gap-3 border-t border-zinc-100 bg-white/95 px-5 py-3.5 backdrop-blur-sm sm:px-6 sm:py-4">
-        {event.tickets.length > 0 ? (
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Mulai dari</p>
-            <p className="text-lg font-extrabold leading-tight text-orange-500">
-              Rp {minPrice.toLocaleString("id-ID")}
-            </p>
+        {/* RIGHT COLUMN: Content & Footer */}
+        <div className="flex flex-1 flex-col min-h-0 min-w-0 bg-white">
+          {/* Scrollable info area */}
+          <div className="flex-1 overflow-y-auto overscroll-contain p-5 sm:p-7">
+            {/* Desktop Title */}
+            <div className="hidden sm:block mb-6">
+              <h2 className="text-2xl font-extrabold text-zinc-950 leading-tight lg:text-3xl">{event.title}</h2>
+            </div>
+
+            {/* Info rows */}
+            <div className="grid grid-cols-1 gap-3">
+              <InfoRow icon={<Calendar className="h-4 w-4 text-orange-500" />} label="Tanggal" value={dateStr} />
+              <InfoRow icon={<Clock className="h-4 w-4 text-orange-500" />}    label="Waktu"   value={`${timeStr} WIB`} />
+              <InfoRow icon={<MapPin className="h-4 w-4 text-orange-500" />}   label="Lokasi"  value="LTC Indonesia" />
+            </div>
+
+            {/* Sinopsis */}
+            {event.description && (
+              <div className="mt-6">
+                <SectionLabel>Sinopsis</SectionLabel>
+                <p className="mt-3 text-sm leading-relaxed text-zinc-600">{event.description}</p>
+              </div>
+            )}
+
+            {/* Kategori Tiket */}
+            {event.tickets.length > 0 && (
+              <div className="mt-6 pb-2">
+                <SectionLabel>Kategori Tiket</SectionLabel>
+                <div className="mt-3 space-y-2.5">
+                  {event.tickets.map((ticket) => (
+                    <div
+                      key={ticket.id}
+                      className="flex items-center justify-between rounded-xl border border-zinc-100 bg-zinc-50/80 px-4 py-3.5 transition-colors hover:border-orange-100 hover:bg-orange-50/50"
+                    >
+                      <div>
+                        <p className="text-sm font-bold text-zinc-900">{ticket.categoryName}</p>
+                        <p className="mt-0.5 text-[11px] font-medium text-zinc-500">
+                          {ticket.stockQuota > 0 ? `${ticket.stockQuota} tiket tersedia` : "Habis terjual"}
+                        </p>
+                      </div>
+                      <p className="text-sm font-extrabold text-orange-500 sm:text-base">
+                        Rp {ticket.price.toLocaleString("id-ID")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          <p className="text-sm text-zinc-400">Tiket tidak tersedia</p>
-        )}
 
-        <Link
-          href={`/checkout/${event.id}`}
-          onClick={onClose}
-          className="group shrink-0 flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-orange-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/30 active:translate-y-0 active:scale-95 sm:px-6 sm:py-3"
-        >
-          <Ticket className="h-4 w-4 transition-transform group-hover:rotate-12" />
-          <span>Beli Tiket</span>
-        </Link>
+          {/* Sticky footer attached to the bottom of the right column */}
+          <div className="shrink-0 flex items-center justify-between gap-3 border-t border-zinc-100 bg-white/95 px-5 py-4 sm:px-7">
+            {event.tickets.length > 0 ? (
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Mulai dari</p>
+                <p className="text-lg font-black leading-tight text-orange-500 lg:text-xl">
+                  Rp {minPrice.toLocaleString("id-ID")}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm font-medium text-zinc-400">Tiket tidak tersedia</p>
+            )}
+
+            <Link
+              href={`/checkout/${event.id}`}
+              onClick={onClose}
+              className="group shrink-0 flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/30 transition-all duration-200 hover:-translate-y-0.5 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/30 active:translate-y-0 active:scale-95"
+            >
+              <Ticket className="h-4 w-4 transition-transform group-hover:rotate-12" />
+              <span>Beli Tiket</span>
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );
