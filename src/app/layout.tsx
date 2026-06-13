@@ -14,7 +14,7 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Katalog LTC Indonesia",
   description:
-    "Temukan tiket pertunjukan teater dan koleksi buku pilihan dari LTC Indonesia",
+    "Temukan tiket pertunjukan teater dan event pilihan dari LTC Indonesia",
 };
 
 export default function RootLayout({
