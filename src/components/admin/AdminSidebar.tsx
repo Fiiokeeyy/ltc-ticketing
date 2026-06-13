@@ -90,8 +90,8 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         }`}
       >
         <div className="flex h-full flex-col">
-          {/* Logo & Brand with Close Button */}
-          <div className="flex items-center justify-between border-b border-zinc-800 p-6">
+          {/* Logo & Brand */}
+          <div className="flex items-center justify-center border-b border-zinc-800 p-6 lg:justify-start">
             <div className="flex items-center gap-3">
               <Image
                 src="/ltc-logo.jpeg"
@@ -105,13 +105,6 @@ export default function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
                 <p className="text-xs text-zinc-400">Admin Dashboard</p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white lg:hidden cursor-pointer"
-              aria-label="Close sidebar"
-            >
-              <X className="h-5 w-5" />
-            </button>
           </div>
 
           {/* Admin Profile */}
