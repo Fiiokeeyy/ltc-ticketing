@@ -19,6 +19,7 @@ import { getTransactionById } from "@/actions/transactionActions";
 import PaymentTimer from "@/components/PaymentTimer";
 import CopyButton from "@/components/CopyButton";
 import PaymentProofUpload from "@/components/PaymentProofUpload";
+import CancelOrderButton from "@/components/CancelOrderButton";
 import Image from "next/image";
 
 interface PaymentPageProps {
@@ -79,7 +80,19 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
       <div className="mx-auto max-w-5xl px-4">
         
         {/* Status Banner */}
-        {isExpired ? (
+        {transaction.status === "cancelled" ? (
+          <div className="mb-8 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
+            <AlertCircle className="h-6 w-6 shrink-0 text-red-600" />
+            <div className="flex-1">
+              <h3 className="font-semibold text-red-900">
+                Pesanan Dibatalkan
+              </h3>
+              <p className="text-sm text-red-700">
+                Pesanan ini telah dibatalkan oleh Anda dan tidak dapat dilanjutkan. Silakan buat pesanan baru.
+              </p>
+            </div>
+          </div>
+        ) : isExpired ? (
           <div className="mb-8 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 p-4">
             <AlertCircle className="h-6 w-6 shrink-0 text-red-600" />
             <div className="flex-1">
@@ -242,7 +255,10 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
 
             {/* Upload Proof */}
             {!isExpired && transaction.status === "pending_payment" && (
-              <PaymentProofUpload orderId={transaction.id} />
+              <div className="space-y-4">
+                <PaymentProofUpload orderId={transaction.id} />
+                <CancelOrderButton orderId={transaction.id} />
+              </div>
             )}
           </div>
 

@@ -20,6 +20,7 @@ import {
 import { createTransaction } from "@/actions/transactionActions";
 import { PaymentMethod } from "@/db/schema";
 import SuccessModal from "@/components/modal/SuccessModal";
+import ConfirmCheckoutModal from "@/components/modal/ConfirmCheckoutModal";
 
 interface Event {
   id: string;
@@ -63,6 +64,7 @@ export default function CheckoutClient({
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -80,13 +82,27 @@ export default function CheckoutClient({
     formData.whatsapp.trim() !== "" &&
     formData.paymentMethod !== "";
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(null);
+
+    const selectedTicket = ticketCategories.find(
+      (t) => t.id === formData.categoryId,
+    );
+
+    if (!selectedTicket) {
+      setErrorMessage("Kategori tiket tidak ditemukan");
+      return;
+    }
+
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirm = async () => {
     setIsSubmitting(true);
     setErrorMessage(null);
 
     try {
-      // Get selected ticket category
       const selectedTicket = ticketCategories.find(
         (t) => t.id === formData.categoryId,
       );
@@ -94,6 +110,7 @@ export default function CheckoutClient({
       if (!selectedTicket) {
         setErrorMessage("Kategori tiket tidak ditemukan");
         setIsSubmitting(false);
+        setShowConfirmModal(false);
         return;
       }
 
@@ -112,6 +129,7 @@ export default function CheckoutClient({
       });
 
       if (result.success && result.orderId) {
+        setShowConfirmModal(false);
         // Show success modal
         setShowSuccessModal(true);
 
@@ -122,11 +140,13 @@ export default function CheckoutClient({
       } else {
         setErrorMessage("Gagal membuat pesanan. Silakan coba lagi.");
         setIsSubmitting(false);
+        setShowConfirmModal(false);
       }
     } catch (error) {
       console.error("Error submitting order:", error);
       setErrorMessage("Terjadi kesalahan. Silakan coba lagi.");
       setIsSubmitting(false);
+      setShowConfirmModal(false);
     }
   };
 
@@ -449,6 +469,23 @@ export default function CheckoutClient({
           </div>
         </div>
       </div>
+
+      {/* Confirm Modal */}
+      <ConfirmCheckoutModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        onConfirm={handleConfirm}
+        isSubmitting={isSubmitting}
+        formData={{
+          name: formData.name,
+          email: formData.email,
+          whatsapp: formData.whatsapp,
+          quantity: formData.quantity,
+          paymentMethodId: formData.paymentMethod,
+        }}
+        selectedTicket={selectedTicket}
+        paymentMethods={paymentMethods}
+      />
 
       {/* Success Modal */}
       <SuccessModal

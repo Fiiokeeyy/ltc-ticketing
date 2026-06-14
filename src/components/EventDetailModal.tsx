@@ -129,6 +129,7 @@ export default function EventDetailModal({ isOpen, onClose, event }: EventDetail
     transition: "transform 280ms cubic-bezier(0.34,1.56,0.64,1), opacity 250ms ease",
     transform: isIn ? "scale(1) translateY(0)" : "scale(0.95) translateY(10px)",
     opacity: isIn ? 1 : 0,
+    height: "min(85vh, 650px)",
     maxHeight: "min(85vh, 650px)",
   };
 
