@@ -143,6 +143,7 @@ export default function AdminTransactionsPage() {
                   Menunggu Verifikasi
                 </option>
                 <option value="verified">Terverifikasi</option>
+                <option value="cancelled">Dibatalkan</option>
                 <option value="rejected">Ditolak</option>
               </select>
             </div>

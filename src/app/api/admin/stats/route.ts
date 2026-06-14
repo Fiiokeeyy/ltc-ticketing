@@ -39,6 +39,8 @@ export async function GET(request: NextRequest) {
       pending_payment: allTransactions.filter(
         (t) => t.status === "pending_payment",
       ).length,
+      rejected: allTransactions.filter((t) => t.status === "rejected").length,
+      cancelled: allTransactions.filter((t) => t.status === "cancelled").length,
     };
 
     // Revenue by event for Bar Chart

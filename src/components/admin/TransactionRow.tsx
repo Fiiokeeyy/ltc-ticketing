@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
-import { verifyPayment } from "@/actions/adminActions";
+import { verifyPayment, rejectPayment } from "@/actions/adminActions";
 import Image from "next/image";
 import ConfirmModal from "@/components/modal/ConfirmModal";
 import SuccessModal from "@/components/modal/SuccessModal";
@@ -44,6 +44,10 @@ const STATUS_BADGE: Record<string, { label: string; className: string }> = {
     label: "Ditolak",
     className: "bg-red-100 text-red-700 border-red-300",
   },
+  cancelled: {
+    label: "Dibatalkan",
+    className: "bg-red-100 text-red-700 border-red-300",
+  },
 };
 
 export default function TransactionRow({
@@ -54,7 +58,10 @@ export default function TransactionRow({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [isRejecting, setIsRejecting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const statusInfo =
     STATUS_BADGE[transaction.status] || STATUS_BADGE.pending_payment;
@@ -68,6 +75,7 @@ export default function TransactionRow({
         setShowConfirmModal(false);
 
         // Tampilkan success modal
+        setSuccessMessage("Pembayaran telah diverifikasi dan e-tiket PDF telah dikirim ke email pelanggan.");
         setShowSuccess(true);
 
         // Setelah 2 detik, tutup modal dan refresh
@@ -92,6 +100,35 @@ export default function TransactionRow({
       setShowConfirmModal(false);
     } finally {
       setIsVerifying(false);
+    }
+  };
+
+  const handleReject = async () => {
+    setIsRejecting(true);
+    try {
+      const result = await rejectPayment(transaction.id);
+      if (result.success) {
+        setShowRejectModal(false);
+        setSuccessMessage("Pembayaran berhasil ditolak. Kuota tiket telah dikembalikan.");
+        setShowSuccess(true);
+
+        setTimeout(() => {
+          setShowSuccess(false);
+          if (onVerifySuccess) {
+            onVerifySuccess();
+          }
+          router.refresh();
+        }, 2000);
+      } else {
+        alert(`Error: ${result.message}`);
+        setShowRejectModal(false);
+      }
+    } catch (error) {
+      console.error("Error rejecting payment:", error);
+      alert("Terjadi kesalahan saat menolak pembayaran");
+      setShowRejectModal(false);
+    } finally {
+      setIsRejecting(false);
     }
   };
 
@@ -225,6 +262,19 @@ export default function TransactionRow({
                   </span>
                 </div>
               </div>
+              
+              {/* Tolak Button on the Left Side */}
+              {transaction.status === "pending_verification" && (
+                <div className="pt-2">
+                  <button
+                    onClick={() => setShowRejectModal(true)}
+                    disabled={isVerifying || isRejecting}
+                    className="w-full cursor-pointer rounded-lg border border-red-500 bg-white px-6 py-3 font-semibold text-red-500 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    ✕ Tolak Pembayaran
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Right Column: Payment Proof & Actions */}
@@ -268,7 +318,7 @@ export default function TransactionRow({
                 {transaction.status === "pending_verification" && (
                   <button
                     onClick={() => setShowConfirmModal(true)}
-                    disabled={isVerifying}
+                    disabled={isVerifying || isRejecting}
                     className="w-full cursor-pointer rounded-lg bg-orange-500 px-6 py-3 font-semibold text-white transition-colors hover:bg-orange-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     ✓ Verifikasi Pembayaran
@@ -293,13 +343,23 @@ export default function TransactionRow({
                     </p>
                   </div>
                 )}
+
+                {transaction.status === "cancelled" && (
+                  <div className="rounded-lg border-2 border-red-300 bg-red-50 p-4 text-center">
+                    <p className="text-sm font-semibold text-red-700">
+                      Pesanan telah dibatalkan
+                    </p>
+                    <p className="mt-1 text-sm text-red-600">
+                      Pesanan dibatalkan secara otomatis atau oleh pembeli.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Verify Confirmation Modal */}
       <ConfirmModal
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
@@ -311,11 +371,23 @@ export default function TransactionRow({
         isLoading={isVerifying}
       />
 
+      {/* Reject Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        onConfirm={handleReject}
+        title="Tolak Pembayaran?"
+        description="Apakah Anda yakin ingin menolak pembayaran ini? Pesanan akan dibatalkan dan kuota tiket akan dikembalikan."
+        confirmText="Ya, Tolak"
+        variant="danger"
+        isLoading={isRejecting}
+      />
+
       {/* Success Modal */}
       <SuccessModal
         isOpen={showSuccess}
-        title="Verifikasi Berhasil!"
-        message="Pembayaran telah diverifikasi dan e-tiket PDF telah dikirim ke email pelanggan."
+        title="Berhasil!"
+        message={successMessage}
       />
     </div>
   );

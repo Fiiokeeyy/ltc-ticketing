@@ -6,6 +6,8 @@ interface StatusData {
   verified: number;
   pending_verification: number;
   pending_payment: number;
+  rejected: number;
+  cancelled: number;
 }
 
 interface StatusDonutChartProps {
@@ -16,12 +18,16 @@ const COLORS = {
   verified: "#f97316", // Orange-500
   pending_verification: "#eab308", // Yellow-500
   pending_payment: "#71717a", // Gray-500
+  rejected: "#ef4444", // Red-500
+  cancelled: "#f87171", // Red-400
 };
 
 const STATUS_LABELS = {
   verified: "Terverifikasi",
   pending_verification: "Menunggu Verifikasi",
   pending_payment: "Menunggu Pembayaran",
+  rejected: "Ditolak",
+  cancelled: "Dibatalkan",
 };
 
 export default function StatusDonutChart({ data }: StatusDonutChartProps) {
@@ -40,6 +46,16 @@ export default function StatusDonutChart({ data }: StatusDonutChartProps) {
       name: STATUS_LABELS.pending_payment,
       value: data.pending_payment,
       color: COLORS.pending_payment,
+    },
+    {
+      name: STATUS_LABELS.rejected,
+      value: data.rejected,
+      color: COLORS.rejected,
+    },
+    {
+      name: STATUS_LABELS.cancelled,
+      value: data.cancelled,
+      color: COLORS.cancelled,
     },
   ];
 

@@ -21,6 +21,8 @@ interface DashboardStats {
     verified: number;
     pending_verification: number;
     pending_payment: number;
+    rejected: number;
+    cancelled: number;
   };
   revenueByEvent: RevenueData[];
 }
