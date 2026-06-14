@@ -85,7 +85,7 @@ export const transactions = sqliteTable(
     totalCheck: check("total_check", sql`${table.totalAmount} >= 0`),
     statusCheck: check(
       "status_check",
-      sql`${table.status} IN ('pending_payment', 'pending_verification', 'verified', 'rejected')`,
+      sql`${table.status} IN ('pending_payment', 'pending_verification', 'verified', 'rejected', 'cancelled')`,
     ),
     emailCheck: check("email_check", sql`${table.customerEmail} LIKE '%@%.%'`),
   }),

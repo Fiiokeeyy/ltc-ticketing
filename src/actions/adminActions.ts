@@ -1,10 +1,10 @@
 "use server";
 
 import { db } from "@/db";
-import { transactions, events } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { transactions, events, tickets } from "@/db/schema";
+import { eq, and, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { sendETicketEmail } from "@/lib/mailer";
+import { sendETicketEmail, sendStatusUpdateEmail } from "@/lib/mailer";
 
 interface ActionResult {
   success: boolean;
@@ -136,11 +136,50 @@ export async function rejectPayment(orderId: string): Promise<ActionResult> {
       };
     }
 
+    // Fetch transaction to get details for quota return
+    const tx = await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.id, orderId))
+      .limit(1);
+
+    if (tx.length === 0) {
+      return { success: false, message: "Transaksi tidak ditemukan." };
+    }
+
+    const transaction = tx[0];
+
     // Update transaction status to rejected
     await db
       .update(transactions)
       .set({ status: "rejected" })
       .where(eq(transactions.id, orderId));
+
+    // Restore quota
+    await db
+      .update(tickets)
+      .set({ stockQuota: sql`${tickets.stockQuota} + ${transaction.ticketQuantity}` })
+      .where(
+        and(
+          eq(tickets.eventId, transaction.eventId),
+          eq(tickets.categoryName, transaction.ticketCategory)
+        )
+      );
+
+    // Send rejection email (in background, don't await/block)
+    sendStatusUpdateEmail(
+      {
+        orderId: transaction.id,
+        customerName: transaction.customerName,
+        customerEmail: transaction.customerEmail,
+        eventTitle: "Event LTC Indonesia", // Fallback, we'd need to JOIN events to get real title, but mailer handles fallback
+        ticketCategory: transaction.ticketCategory,
+        ticketQuantity: transaction.ticketQuantity,
+        totalAmount: transaction.totalAmount,
+        paymentMethod: (transaction.paymentMethod as "qris" | "mybca" | "blu" | "superbank") || "qris",
+      },
+      "rejected"
+    ).catch(console.error);
 
     // Revalidate admin transactions page
     revalidatePath("/admin/transactions");

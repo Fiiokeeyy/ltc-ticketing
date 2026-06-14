@@ -1,8 +1,10 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { transactions, events } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
+import { transactions, events, tickets } from "@/db/schema";
+import { sendStatusUpdateEmail } from "@/lib/mailer";
 import { sendPaymentEmail } from "@/lib/mailer";
 
 interface CreateTransactionData {
@@ -20,6 +22,29 @@ export async function createTransaction(data: CreateTransactionData) {
   try {
     // Generate unique order ID
     const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+
+    // Check quota first
+    const ticketInfo = await db
+      .select()
+      .from(tickets)
+      .where(
+        and(
+          eq(tickets.eventId, data.eventId),
+          eq(tickets.categoryName, data.ticketCategory)
+        )
+      )
+      .limit(1);
+
+    if (ticketInfo.length > 0) {
+      if (ticketInfo[0].stockQuota < data.ticketQuantity) {
+        return { success: false, error: "Kuota tiket tidak mencukupi" };
+      }
+      
+      // Decrement quota
+      await db.update(tickets)
+        .set({ stockQuota: sql`${tickets.stockQuota} - ${data.ticketQuantity}` })
+        .where(eq(tickets.id, ticketInfo[0].id));
+    }
 
     // Insert transaction to database
     await db.insert(transactions).values({
@@ -109,6 +134,69 @@ export async function getTransactionById(orderId: string) {
     return {
       success: false,
       error: "Failed to fetch transaction",
+    };
+  }
+}
+
+export async function cancelTransaction(orderId: string) {
+  try {
+    // Only allow cancelling if status is pending_payment
+    const tx = await db
+      .select()
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.id, orderId),
+          eq(transactions.status, "pending_payment")
+        )
+      )
+      .limit(1);
+
+    if (tx.length === 0) {
+      return { success: false, error: "Transaction not found or already cancelled" };
+    }
+
+    const transaction = tx[0];
+
+    await db
+      .update(transactions)
+      .set({ status: "cancelled" })
+      .where(eq(transactions.id, orderId));
+
+    // Restore quota
+    await db
+      .update(tickets)
+      .set({ stockQuota: sql`${tickets.stockQuota} + ${transaction.ticketQuantity}` })
+      .where(
+        and(
+          eq(tickets.eventId, transaction.eventId),
+          eq(tickets.categoryName, transaction.ticketCategory)
+        )
+      );
+
+    // Send cancellation email
+    sendStatusUpdateEmail(
+      {
+        orderId: transaction.id,
+        customerName: transaction.customerName,
+        customerEmail: transaction.customerEmail,
+        eventTitle: "Event LTC Indonesia",
+        ticketCategory: transaction.ticketCategory,
+        ticketQuantity: transaction.ticketQuantity,
+        totalAmount: transaction.totalAmount,
+        paymentMethod: (transaction.paymentMethod as "qris" | "mybca" | "blu" | "superbank") || "qris",
+      },
+      "cancelled"
+    ).catch(console.error);
+
+    revalidatePath(`/checkout/${transaction.eventId}`);
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error cancelling transaction:", error);
+    return {
+      success: false,
+      error: "Failed to cancel transaction",
     };
   }
 }
