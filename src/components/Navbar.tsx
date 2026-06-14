@@ -89,44 +89,48 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Dropdown Menu */}
-      <div
-        className={`grid transition-all duration-300 ease-in-out md:hidden ${
-          isMenuOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-        }`}
-      >
-        <div className="overflow-hidden">
-          <div className="border-t border-zinc-200 bg-white px-6 py-4 shadow-inner">
-            <div className="flex flex-col space-y-4">
-              {/* Mobile Navigation Links */}
-              <Link
-                href="/"
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-base font-medium transition-colors hover:text-orange-500 ${
-                  isActive("/") ? "text-orange-500" : "text-zinc-700"
-                }`}
-              >
-                Beranda
-              </Link>
-              <Link
-                href="/tiket"
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-base font-medium transition-colors hover:text-orange-500 ${
-                  isActive("/tiket") ? "text-orange-500" : "text-zinc-700"
-                }`}
-              >
-                Jadwal Pertunjukan
-              </Link>
-              <Link
-                href="/cara-pesan-tiket"
-                onClick={() => setIsMenuOpen(false)}
-                className={`text-base font-medium transition-colors hover:text-orange-500 ${
-                  isActive("/cara-pesan-tiket")
-                    ? "text-orange-500"
-                    : "text-zinc-700"
-                }`}
-              >
-                Cara Pesan Tiket
-              </Link>
+      <div className="absolute left-0 top-full w-full md:hidden">
+        <div
+          className={`grid bg-white transition-all duration-300 ease-out ${
+            isMenuOpen
+              ? "grid-rows-[1fr] opacity-100 shadow-lg"
+              : "pointer-events-none grid-rows-[0fr] opacity-0"
+          }`}
+        >
+          <div className="overflow-hidden">
+            <div className="border-t border-zinc-200 px-6 py-4 shadow-inner">
+              <div className="flex flex-col space-y-4">
+                {/* Mobile Navigation Links */}
+                <Link
+                  href="/"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`text-base font-medium transition-colors hover:text-orange-500 ${
+                    isActive("/") ? "text-orange-500" : "text-zinc-700"
+                  }`}
+                >
+                  Beranda
+                </Link>
+                <Link
+                  href="/tiket"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`text-base font-medium transition-colors hover:text-orange-500 ${
+                    isActive("/tiket") ? "text-orange-500" : "text-zinc-700"
+                  }`}
+                >
+                  Jadwal Pertunjukan
+                </Link>
+                <Link
+                  href="/cara-pesan-tiket"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`text-base font-medium transition-colors hover:text-orange-500 ${
+                    isActive("/cara-pesan-tiket")
+                      ? "text-orange-500"
+                      : "text-zinc-700"
+                  }`}
+                >
+                  Cara Pesan Tiket
+                </Link>
+              </div>
             </div>
           </div>
         </div>
