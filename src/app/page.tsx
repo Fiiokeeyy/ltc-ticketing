@@ -8,6 +8,8 @@ import TestimonialSlider from "@/components/TestimonialSlider";
 import PageHero from "@/components/PageHero";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const approvedTestimonials = await db
     .select({

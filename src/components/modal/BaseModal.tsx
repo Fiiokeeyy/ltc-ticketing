@@ -1,6 +1,7 @@
 "use client";
 
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 interface BaseModalProps {
@@ -18,6 +19,15 @@ export default function BaseModal({
   children,
   maxWidth = "2xl",
 }: BaseModalProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Prevent scrolling on body when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -30,7 +40,7 @@ export default function BaseModal({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const maxWidthClasses = {
     sm: "max-w-sm",
@@ -41,7 +51,7 @@ export default function BaseModal({
     "3xl": "max-w-3xl",
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
       <div 
         className={`w-full ${maxWidthClasses[maxWidth]} max-h-[90vh] flex flex-col rounded-2xl bg-white shadow-xl animate-in zoom-in-95 duration-200`}
@@ -63,6 +73,7 @@ export default function BaseModal({
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

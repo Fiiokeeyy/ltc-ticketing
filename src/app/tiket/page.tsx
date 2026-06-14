@@ -6,6 +6,8 @@ import EventsGrid from "@/components/EventsGrid";
 import PageHero from "@/components/PageHero";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
+export const dynamic = "force-dynamic";
+
 export default async function TiketPage() {
   // Fetch all events with their tickets
   const allEvents = await db.select().from(events);
