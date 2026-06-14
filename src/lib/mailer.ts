@@ -448,3 +448,114 @@ export async function sendETicketEmail(orderData: PaymentEmailData) {
     };
   }
 }
+
+export async function sendStatusUpdateEmail(
+  orderData: PaymentEmailData,
+  status: "cancelled" | "rejected"
+) {
+  try {
+    validateEmailConfig();
+
+    const {
+      orderId,
+      customerName,
+      customerEmail,
+      eventTitle,
+    } = orderData;
+
+    const displayEventTitle = eventTitle || "Event LTC Indonesia";
+    
+    let subject = "";
+    let emoji = "";
+    let title = "";
+    let message = "";
+    let bgColor = "";
+    let iconColor = "";
+
+    if (status === "cancelled") {
+      subject = `❌ Pesanan Dibatalkan - Tiket ${displayEventTitle} [${orderId}]`;
+      emoji = "❌";
+      title = "Pesanan Dibatalkan";
+      bgColor = "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)";
+      iconColor = "#fee2e2";
+      message = `Pesanan tiket Anda untuk event <strong>${displayEventTitle}</strong> telah dibatalkan. Ini bisa terjadi karena batas waktu pembayaran telah habis atau pesanan dibatalkan secara manual. Jika Anda masih ingin menonton acara ini, silakan buat pesanan baru.`;
+    } else {
+      subject = `⚠️ Pembayaran Ditolak - Tiket ${displayEventTitle} [${orderId}]`;
+      emoji = "⚠️";
+      title = "Pembayaran Ditolak";
+      bgColor = "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)";
+      iconColor = "#fef3c7";
+      message = `Pembayaran Anda untuk event <strong>${displayEventTitle}</strong> tidak dapat kami verifikasi dan terpaksa kami tolak. Ini bisa terjadi karena bukti transfer yang buram, nominal yang tidak sesuai, atau uang belum masuk ke rekening kami. Pesanan Anda kini telah dibatalkan dan kuota telah dikembalikan. Jika Anda telah mentransfer dana, silakan hubungi Customer Service kami melalui WhatsApp dengan menyertakan ID Pesanan Anda untuk proses refund manual.`;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html lang="id">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${title}</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f4f6; padding: 40px 20px;">
+          <tr>
+            <td align="center">
+              <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                
+                <tr>
+                  <td style="background: ${bgColor}; padding: 40px 30px; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">${emoji}</div>
+                    <h1 style="color: #ffffff; margin: 0 0 12px 0; font-size: 28px; font-weight: bold;">${title}</h1>
+                    <p style="color: ${iconColor}; margin: 0; font-size: 16px;">ID Pesanan: ${orderId}</p>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding: 40px 30px;">
+                    <h2 style="color: #111827; margin: 0 0 16px 0; font-size: 20px;">Halo, ${customerName}.</h2>
+                    <p style="color: #6b7280; margin: 0 0 24px 0; line-height: 1.6; font-size: 15px;">
+                      ${message}
+                    </p>
+
+                    <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 16px; margin: 24px 0; border-radius: 8px;">
+                      <p style="margin: 0; color: #78350f; font-size: 14px; line-height: 1.6;">
+                        <strong>💬 Butuh Bantuan?</strong><br>
+                        Jika ada pertanyaan atau kendala, silakan hubungi kami melalui WhatsApp atau email yang tertera di website LTC Indonesia.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center; border-top: 1px solid #e5e7eb;">
+                    <p style="color: #6b7280; margin: 0 0 8px 0; font-size: 13px;">
+                      © 2026 LTC Indonesia. All rights reserved.
+                    </p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+      </html>
+    `;
+
+    const mailOptions = {
+      from: {
+        name: "LTC Indonesia",
+        address: process.env.EMAIL_USER!,
+      },
+      to: customerEmail,
+      subject,
+      html: htmlContent,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error("Error sending status email:", error);
+    return { success: false, error: "Failed to send status email" };
+  }
+}
