@@ -19,6 +19,7 @@ interface EventData {
   description: string;
   posterUrl: string;
   showDate: string | Date;
+  tickets?: TicketCategory[];
 }
 
 interface Props {
@@ -56,7 +57,11 @@ export default function AddEventModal({
   const [posterFile, setPosterFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState(() => getInitialForm(initialData));
-  const [tickets, setTickets] = useState<TicketCategory[]>([{ ...EMPTY_TICKET }]);
+  const [tickets, setTickets] = useState<TicketCategory[]>(
+    initialData?.tickets && initialData.tickets.length > 0 
+      ? initialData.tickets 
+      : [{ ...EMPTY_TICKET }]
+  );
 
   // Memoize the object URL so it isn't re-created on every render.
   const posterPreviewUrl = useMemo(
@@ -68,7 +73,11 @@ export default function AddEventModal({
 
   const handleOpen = () => {
     setFormData(getInitialForm(initialData));
-    setTickets([{ ...EMPTY_TICKET }]);
+    setTickets(
+      initialData?.tickets && initialData.tickets.length > 0 
+        ? initialData.tickets 
+        : [{ ...EMPTY_TICKET }]
+    );
     setPosterFile(null);
     setIsOpen(true);
   };
