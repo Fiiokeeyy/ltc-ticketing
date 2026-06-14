@@ -139,6 +139,7 @@ export async function updateTestimonialStatus(
       .where(eq(testimonials.id, id));
 
     revalidatePath("/admin/testimonials");
+    revalidatePath("/");
 
     return {
       success: true,
