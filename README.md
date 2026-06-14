@@ -8,6 +8,9 @@
   ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38BDF8?logo=tailwindcss&logoColor=white)
   ![Drizzle ORM](https://img.shields.io/badge/Drizzle_ORM-0.45-C5F74F?logo=drizzle&logoColor=black)
   ![Turso](https://img.shields.io/badge/Turso-LibSQL-4FF8D2?logo=turso&logoColor=black)
+  ![Cloudinary](https://img.shields.io/badge/Cloudinary-1.64-1778F5?logo=cloudinary&logoColor=white)
+  ![Vercel](https://img.shields.io/badge/Vercel-14.0.0-000000?logo=vercel&logoColor=white)
+  
 
 </div>
 
@@ -22,9 +25,11 @@
 ### 🎭 Halaman Publik
 - **Beranda** — Landing page dengan animasi scroll halus dan testimoni pengguna
 - **Jadwal Pertunjukan** — Grid event yang dapat dijelajahi dengan detail lengkap
-- **Pemesanan Tiket** — Checkout guest (tanpa registrasi), pilih kategori dan jumlah tiket
+- **Pemesanan Tiket** — Checkout guest dengan fitur validasi ganda (Double Confirmation)
+- **Ketersediaan Real-Time** — Kuota tiket akan otomatis berkurang saat dipesan dan kembali jika dibatalkan
 - **Pembayaran** — Upload bukti transfer dengan Cloudinary; mendukung Transfer Bank & QRIS
 - **E-Tiket Digital** — QR Code unik dikirim ke email setelah pembayaran terverifikasi
+- **Notifikasi Otomatis** — Email otomatis terkirim jika pembayaran berhasil, dibatalkan, atau ditolak
 - **Tulis Ulasan** — Pengunjung dapat memberikan testimoni setelah menonton
 - **Cara Pesan Tiket** — Panduan langkah demi langkah
 - **Pusat Bantuan** — FAQ lengkap dan informasi kontak
@@ -33,8 +38,8 @@
 ### 🛡️ Panel Admin
 - **Dashboard Utama** — Statistik real-time: total transaksi, pendapatan, status pembayaran
 - **Grafik Pendapatan** — Visualisasi data dengan Recharts (filter periode)
-- **Kelola Transaksi** — Verifikasi pembayaran, lihat bukti transfer, ekspor CSV
-- **Kelola Event** — CRUD event pertunjukan beserta tiket per kategori
+- **Kelola Transaksi** — Verifikasi/Tolak pembayaran, kirim notifikasi otomatis, dan filter status
+- **Kelola Event** — CRUD event pertunjukan beserta manajemen kuota tiket dan harga per kategori
 - **Kelola Ulasan** — Moderasi (approve/reject) testimoni pengunjung
 - **Metode Pembayaran** — Konfigurasi rekening bank dan QRIS dinamis
 - **Scan Tiket Gate** — Halaman pemindaian QR Code khusus Petugas Gate
@@ -113,7 +118,6 @@ ltc-ticketing/
 │   │   └── email.ts       # Nodemailer helper
 │   └── proxy.ts           # Middleware (route guard + RBAC)
 ├── drizzle/               # Generated migration files
-├── .env.example           # Template environment variables
 └── drizzle.config.ts
 ```
 
@@ -166,7 +170,7 @@ Buka [http://localhost:3000](http://localhost:3000)
 
 ## 🔑 Environment Variables
 
-Buat file `.env.local` di root proyek. Lihat [`.env.example`](.env.example) untuk template lengkap.
+Buat file `.env.local` di root proyek. Konfigurasi yang dibutuhkan adalah sebagai berikut:
 
 | Variable | Keterangan |
 |---|---|
@@ -188,7 +192,7 @@ Buat file `.env.local` di root proyek. Lihat [`.env.example`](.env.example) untu
 
 1. Push kode ke GitHub
 2. Buka [vercel.com](https://vercel.com) → Import repository
-3. Di **Settings → Environment Variables**, tambahkan semua variabel dari `.env.example`
+3. Di **Settings → Environment Variables**, tambahkan semua variabel lingkungan yang ada di tabel atas
 4. Ubah `NEXT_PUBLIC_APP_URL` menjadi URL Vercel Anda
 5. Klik **Deploy** ✅
 
@@ -203,8 +207,7 @@ Tabel utama dalam database Turso:
 | `users` | Admin & Gate accounts (dengan bcrypt password) |
 | `events` | Data pertunjukan teater |
 | `tickets` | Kategori tiket per event (harga, stok, dll) |
-| `transactions` | Pesanan pengunjung + status pembayaran |
-| `order_items` | Detail item dalam setiap transaksi |
+| `transactions` | Pesanan pengunjung, detail item/tiket, & status pembayaran |
 | `payment_methods` | Konfigurasi rekening & QRIS aktif |
 | `testimonials` | Ulasan pengunjung (pending/approved/rejected) |
 
