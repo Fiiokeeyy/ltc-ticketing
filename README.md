@@ -73,52 +73,56 @@
 
 ## 📁 Struktur Proyek
 
-```
+```text
 ltc-ticketing/
 ├── src/
-│   ├── actions/           # Server Actions (Next.js)
-│   │   ├── adminActions.ts
-│   │   ├── authActions.ts
-│   │   ├── eventActions.ts
-│   │   ├── paymentMethodActions.ts
-│   │   ├── scanActions.ts
-│   │   ├── testimonialActions.ts
-│   │   ├── transactionActions.ts
-│   │   └── uploadActions.ts
-│   ├── app/               # App Router pages
-│   │   ├── admin/         # Panel admin (protected)
-│   │   │   ├── (dashboard)/   # Dashboard layout group
-│   │   │   │   ├── page.tsx       # Dashboard utama
-│   │   │   │   ├── transactions/  # Kelola tiket
-│   │   │   │   ├── events/        # Kelola event
-│   │   │   │   ├── testimonials/  # Moderasi ulasan
-│   │   │   │   ├── payment-methods/
-│   │   │   │   └── scanner/       # Scan QR gate
-│   │   │   └── login/
-│   │   ├── api/           # API Routes
-│   │   │   ├── auth/      # Login & logout
-│   │   │   └── admin/     # Admin API endpoints
-│   │   ├── tiket/         # Jadwal pertunjukan
-│   │   ├── checkout/      # Form pemesanan
-│   │   ├── payment/       # Upload bukti bayar
-│   │   ├── e-tiket/       # Tampilan e-tiket digital
-│   │   ├── tulis-ulasan/
-│   │   ├── cara-pesan-tiket/
-│   │   ├── pusat-bantuan/
-│   │   └── syarat-ketentuan/
-│   ├── components/        # Reusable UI components
-│   │   ├── admin/         # Komponen khusus admin
-│   │   └── modal/
-│   ├── db/
-│   │   ├── index.ts       # Drizzle client
-│   │   └── schema.ts      # Database schema
-│   ├── lib/
-│   │   ├── auth.ts        # JWT utilities
-│   │   ├── dateFilter.ts
-│   │   └── email.ts       # Nodemailer helper
-│   └── proxy.ts           # Middleware (route guard + RBAC)
-├── drizzle/               # Generated migration files
-└── drizzle.config.ts
+│   ├── actions/           # Server Actions untuk komunikasi client ke server (Next.js)
+│   │   ├── adminActions.ts      # Aksi terkait statistik dashboard & pengelolaan admin
+│   │   ├── authActions.ts       # Aksi autentikasi (login, logout, verifikasi password)
+│   │   ├── eventActions.ts      # Aksi CRUD data event/pertunjukan teater
+│   │   ├── paymentMethodActions.ts # Aksi mengelola metode pembayaran (Bank, QRIS)
+│   │   ├── scanActions.ts       # Aksi untuk pemindaian dan validasi tiket di gate
+│   │   ├── testimonialActions.ts# Aksi manajemen dan moderasi ulasan pengunjung
+│   │   ├── transactionActions.ts# Aksi pemesanan, verifikasi & konfirmasi transaksi
+│   │   └── uploadActions.ts     # Aksi upload file bukti pembayaran ke Cloudinary
+│   ├── app/               # Next.js App Router (Halaman Aplikasi Utama)
+│   │   ├── admin/         # Rute panel admin (dilindungi oleh middleware)
+│   │   │   ├── (dashboard)/   # Layout group untuk tampilan dalam dashboard admin
+│   │   │   │   ├── page.tsx       # Halaman utama admin (Statistik & Grafik)
+│   │   │   │   ├── transactions/  # Halaman kelola transaksi pengunjung
+│   │   │   │   ├── events/        # Halaman manajemen daftar pertunjukan
+│   │   │   │   ├── testimonials/  # Halaman untuk setujui/tolak ulasan pengunjung
+│   │   │   │   ├── payment-methods/ # Halaman pengaturan nomor rekening bank/QRIS
+│   │   │   │   └── scanner/       # Halaman khusus petugas gate memindai QR tiket
+│   │   │   └── login/         # Halaman login masuk untuk Admin dan petugas Gate
+│   │   ├── api/           # Next.js Route Handlers (Endpoint API Backend)
+│   │   │   ├── auth/      # API untuk autentikasi (login)
+│   │   │   └── admin/     # API khusus akses data untuk admin
+│   │   ├── tiket/         # Halaman daftar jadwal pertunjukan untuk pengunjung
+│   │   ├── checkout/      # Halaman form pengisian data pemesanan pengunjung
+│   │   ├── payment/       # Halaman upload bukti bayar & status pesanan
+│   │   ├── e-tiket/       # Halaman untuk menampilkan e-tiket digital (QR Code)
+│   │   ├── tulis-ulasan/  # Form khusus pengunjung untuk memberikan testimoninya
+│   │   ├── cara-pesan-tiket/# Halaman informasi cara memesan tiket
+│   │   ├── pusat-bantuan/ # Halaman FAQ (Pertanyaan Umum) dan kontak
+│   │   └── syarat-ketentuan/# Halaman Syarat dan Ketentuan penggunaan aplikasi
+│   ├── components/        # Komponen React yang dapat digunakan ulang (Reusable)
+│   │   ├── admin/         # Komponen khusus panel Admin (Sidebar, Chart, dll)
+│   │   └── modal/         # Komponen pop-up/modal (pesan sukses, konfirmasi hapus)
+│   ├── db/                # Konfigurasi dan Skema Database Server (Turso & Drizzle)
+│   │   ├── index.ts       # Inisialisasi koneksi klien database Drizzle ORM
+│   │   └── schema.ts      # Definisi tabel database (tabel users, events, dll)
+│   ├── lib/               # Utility dan Helper Functions
+│   │   ├── auth.ts        # Helper utilitas verifikasi JWT dan proses enkripsi
+│   │   ├── dateFilter.ts  # Helper fungsi pemformatan & penyaringan waktu/tanggal
+│   │   └── email.ts       # Helper fungsionalitas email (Nodemailer otomatis)
+│   └── proxy.ts           # Middleware Next.js untuk proteksi route & kontrol akses
+├── public/                # Folder tempat aset statis publik (gambar, logo, font, dll)
+├── drizzle/               # Folder hasil generate skema migrasi database Drizzle
+├── drizzle.config.ts      # File konfigurasi Drizzle ORM terhadap Turso
+├── next.config.ts         # File konfigurasi Next.js framework
+├── tailwind.config.js     # File konfigurasi utility styling Tailwind CSS
+└── package.json           # File manifest daftar package (dependencies & scripts) proyek
 ```
 
 ---

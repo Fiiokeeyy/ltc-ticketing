@@ -113,7 +113,13 @@ export default async function AdminEventsPage() {
   );
 }
 
-function EventCard({ event, eventTickets, lowestPrice, ticketCount, className = "" }: any) {
+function EventCard({ event, eventTickets, lowestPrice, ticketCount, className = "" }: {
+  event: typeof events.$inferSelect;
+  eventTickets: typeof tickets.$inferSelect[];
+  lowestPrice: number;
+  ticketCount: number;
+  className?: string;
+}) {
   const d = event.showDate;
   return (
     <div
