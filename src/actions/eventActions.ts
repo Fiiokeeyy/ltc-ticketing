@@ -64,19 +64,42 @@ interface UpdateEventData {
   description: string;
   posterUrl: string;
   showDate: Date;
+  tickets?: TicketCategory[];
 }
 
 export async function updateEvent(id: string, data: UpdateEventData) {
   try {
-    await db
-      .update(events)
-      .set({
-        title: data.title,
-        description: data.description,
-        posterUrl: data.posterUrl,
-        showDate: data.showDate,
-      })
-      .where(eq(events.id, id));
+    await db.transaction(async (tx) => {
+      // 1. Update event
+      await tx
+        .update(events)
+        .set({
+          title: data.title,
+          description: data.description,
+          posterUrl: data.posterUrl,
+          showDate: data.showDate,
+        })
+        .where(eq(events.id, id));
+
+      // 2. Update tickets
+      if (data.tickets) {
+        // Delete all old tickets
+        await tx.delete(tickets).where(eq(tickets.eventId, id));
+
+        // Insert new ones
+        if (data.tickets.length > 0) {
+          const ticketValues = data.tickets.map((ticket) => ({
+            id: createId(),
+            eventId: id,
+            categoryName: ticket.categoryName,
+            price: ticket.price,
+            stockQuota: ticket.stockQuota,
+          }));
+
+          await tx.insert(tickets).values(ticketValues);
+        }
+      }
+    });
 
     revalidatePath("/admin/events");
     return { success: true };

@@ -120,7 +120,7 @@ export default function AddEventModal({
       };
 
       const result = initialData?.id
-        ? await updateEvent(initialData.id, payload)
+        ? await updateEvent(initialData.id, { ...payload, tickets })
         : await addEvent({ ...payload, tickets });
 
       if (result.success) {
@@ -269,8 +269,7 @@ export default function AddEventModal({
             </div>
           </div>
 
-          {/* ── Kategori Tiket (Add mode only) ── */}
-          {!initialData && (
+          {/* ── Kategori Tiket ── */}
             <div className="space-y-4">
               <h3 className="border-b pb-2 font-semibold text-zinc-800">Kategori Tiket</h3>
               {tickets.map((ticket, index) => (
@@ -340,7 +339,6 @@ export default function AddEventModal({
                 Tambah Kategori Tiket
               </button>
             </div>
-          )}
 
           {/* ── Actions ── */}
           <div className="flex justify-end gap-3 border-t pt-4">
