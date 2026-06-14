@@ -71,11 +71,18 @@ export default function Navbar() {
               className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-900 transition-colors hover:bg-zinc-100 md:hidden"
               aria-label="Toggle menu"
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+              <div className="relative h-6 w-6">
+                <Menu
+                  className={`absolute inset-0 h-6 w-6 transition-all duration-300 ease-in-out ${
+                    isMenuOpen ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"
+                  }`}
+                />
+                <X
+                  className={`absolute inset-0 h-6 w-6 transition-all duration-300 ease-in-out ${
+                    isMenuOpen ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0"
+                  }`}
+                />
+              </div>
             </button>
           </div>
         </div>
@@ -83,42 +90,44 @@ export default function Navbar() {
 
       {/* Mobile Dropdown Menu */}
       <div
-        className={`overflow-hidden transition-all duration-300 ease-in-out md:hidden ${
-          isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        className={`grid transition-all duration-300 ease-in-out md:hidden ${
+          isMenuOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
-        <div className="border-t border-zinc-200 bg-white px-6 py-4">
-          <div className="flex flex-col space-y-4">
-            {/* Mobile Navigation Links */}
-            <Link
-              href="/"
-              onClick={() => setIsMenuOpen(false)}
-              className={`text-base font-medium transition-colors hover:text-orange-500 ${
-                isActive("/") ? "text-orange-500" : "text-zinc-700"
-              }`}
-            >
-              Beranda
-            </Link>
-            <Link
-              href="/tiket"
-              onClick={() => setIsMenuOpen(false)}
-              className={`text-base font-medium transition-colors hover:text-orange-500 ${
-                isActive("/tiket") ? "text-orange-500" : "text-zinc-700"
-              }`}
-            >
-              Jadwal Pertunjukan
-            </Link>
-            <Link
-              href="/cara-pesan-tiket"
-              onClick={() => setIsMenuOpen(false)}
-              className={`text-base font-medium transition-colors hover:text-orange-500 ${
-                isActive("/cara-pesan-tiket")
-                  ? "text-orange-500"
-                  : "text-zinc-700"
-              }`}
-            >
-              Cara Pesan Tiket
-            </Link>
+        <div className="overflow-hidden">
+          <div className="border-t border-zinc-200 bg-white px-6 py-4 shadow-inner">
+            <div className="flex flex-col space-y-4">
+              {/* Mobile Navigation Links */}
+              <Link
+                href="/"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-base font-medium transition-colors hover:text-orange-500 ${
+                  isActive("/") ? "text-orange-500" : "text-zinc-700"
+                }`}
+              >
+                Beranda
+              </Link>
+              <Link
+                href="/tiket"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-base font-medium transition-colors hover:text-orange-500 ${
+                  isActive("/tiket") ? "text-orange-500" : "text-zinc-700"
+                }`}
+              >
+                Jadwal Pertunjukan
+              </Link>
+              <Link
+                href="/cara-pesan-tiket"
+                onClick={() => setIsMenuOpen(false)}
+                className={`text-base font-medium transition-colors hover:text-orange-500 ${
+                  isActive("/cara-pesan-tiket")
+                    ? "text-orange-500"
+                    : "text-zinc-700"
+                }`}
+              >
+                Cara Pesan Tiket
+              </Link>
+            </div>
           </div>
         </div>
       </div>
