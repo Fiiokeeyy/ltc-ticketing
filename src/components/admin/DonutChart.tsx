@@ -1,5 +1,3 @@
-import React from "react";
-
 interface DonutChartProps {
   value: number;
   total: number;

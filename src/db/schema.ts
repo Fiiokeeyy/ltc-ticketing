@@ -61,52 +61,6 @@ export const tickets = sqliteTable(
 export type Ticket = typeof tickets.$inferSelect;
 export type NewTicket = typeof tickets.$inferInsert;
 
-// Orders Table
-export const orders = sqliteTable(
-  "orders",
-  {
-    id: text("id", { length: 255 }).primaryKey().notNull(),
-    userId: text("user_id", { length: 255 })
-      .notNull()
-      .references(() => users.id, { onDelete: "restrict" }),
-    totalAmount: integer("total_amount").notNull(),
-    status: text("status", { length: 50 }).notNull().default("PENDING"),
-    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  },
-  (table) => ({
-    totalCheck: check("total_check", sql`${table.totalAmount} >= 0`),
-    statusCheck: check(
-      "status_check",
-      sql`${table.status} IN ('PENDING', 'PAID', 'CANCELLED')`,
-    ),
-  }),
-);
-
-export type Order = typeof orders.$inferSelect;
-export type NewOrder = typeof orders.$inferInsert;
-// Order Items Table
-export const orderItems = sqliteTable(
-  "order_items",
-  {
-    id: text("id").primaryKey().notNull(),
-    orderId: text("order_id")
-      .notNull()
-      .references(() => orders.id, { onDelete: "cascade" }),
-    ticketId: text("ticket_id")
-      .notNull()
-      .references(() => tickets.id, { onDelete: "restrict" }),
-    quantity: integer("quantity").notNull(),
-    subtotal: integer("subtotal").notNull(),
-  },
-  (table) => ({
-    quantityCheck: check("quantity_check", sql`${table.quantity} >= 1`),
-    subtotalCheck: check("subtotal_check", sql`${table.subtotal} >= 0`),
-  }),
-);
-
-export type OrderItem = typeof orderItems.$inferSelect;
-export type NewOrderItem = typeof orderItems.$inferInsert;
-
 // Transactions Table (Guest Checkout with Manual Payment Verification)
 export const transactions = sqliteTable(
   "transactions",

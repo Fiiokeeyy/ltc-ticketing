@@ -57,6 +57,13 @@
       "when": 1781366438578,
       "tag": "0007_smart_fantastic_four",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1781401455010,
+      "tag": "0008_dusty_young_avengers",
+      "breakpoints": true
     }
   ]
 }
